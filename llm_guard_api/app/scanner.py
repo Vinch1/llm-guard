@@ -5,7 +5,6 @@ from typing import Dict, List, Optional
 import structlog
 import torch
 from opentelemetry import metrics
-
 from llm_guard import input_scanners, output_scanners
 from llm_guard.input_scanners.anonymize_helpers import DEBERTA_AI4PRIVACY_v2_CONF
 from llm_guard.input_scanners.ban_code import MODEL_SM as BAN_CODE_MODEL
@@ -13,6 +12,7 @@ from llm_guard.input_scanners.ban_competitors import MODEL_V1 as BAN_COMPETITORS
 from llm_guard.input_scanners.ban_topics import MODEL_DEBERTA_BASE_V2 as BAN_TOPICS_MODEL
 from llm_guard.input_scanners.base import Scanner as InputScanner
 from llm_guard.input_scanners.code import DEFAULT_MODEL as CODE_MODEL
+from llm_guard.input_scanners.emotion_detection import DEFAULT_MODEL as EMOTION_DETECTION_MODEL
 from llm_guard.input_scanners.gibberish import DEFAULT_MODEL as GIBBERISH_MODEL
 from llm_guard.input_scanners.language import DEFAULT_MODEL as LANGUAGE_MODEL
 from llm_guard.input_scanners.prompt_injection import V2_MODEL as PROMPT_INJECTION_MODEL
@@ -166,10 +166,6 @@ def _get_input_scanner(
         scanner_config["model"] = TOXICITY_MODEL
 
     if scanner_name == "EmotionDetection":
-        from llm_guard.input_scanners.emotion_detection import (
-            DEFAULT_MODEL as EMOTION_DETECTION_MODEL,
-        )
-
         _configure_model(EMOTION_DETECTION_MODEL, scanner_config)
         scanner_config["model"] = EMOTION_DETECTION_MODEL
 
@@ -259,10 +255,6 @@ def _get_output_scanner(
         scanner_config["model"] = TOXICITY_MODEL
 
     if scanner_name == "EmotionDetection":
-        from llm_guard.input_scanners.emotion_detection import (
-            DEFAULT_MODEL as EMOTION_DETECTION_MODEL,
-        )
-
         _configure_model(EMOTION_DETECTION_MODEL, scanner_config)
         scanner_config["model"] = EMOTION_DETECTION_MODEL
 

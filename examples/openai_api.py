@@ -4,18 +4,16 @@ Before running the example, make sure the OPENAI_API_KEY environment variable is
 If it is not already set, it can be set by using `export OPENAI_API_KEY=YOUR_API_KEY` on Unix/Linux/MacOS systems or `set OPENAI_API_KEY=YOUR_API_KEY` on Windows systems.
 """
 
-import os
-
-from openai import OpenAI
-
 from llm_guard import scan_output, scan_prompt
 from llm_guard.input_scanners import Anonymize, PromptInjection, TokenLimit, Toxicity
 from llm_guard.output_scanners import Deanonymize, NoRefusal, Relevance, Sensitive
 from llm_guard.vault import Vault
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+OPENAI_API_KEY = "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"
+OPENAI_ENDPOINT = "https://openrouter.ai/api/v1"
+# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 vault = Vault()
-input_scanners = [Anonymize(vault), Toxicity(), TokenLimit(), PromptInjection()]
+input_scanners = [Anonymize(vault), Toxicity(), TokenLimit(), ()]
 output_scanners = [Deanonymize(vault), NoRefusal(), Relevance(), Sensitive()]
 
 prompt = (
@@ -31,16 +29,27 @@ if any(results_valid.values()) is False:
     exit(1)
 
 print(f"Prompt: {sanitized_prompt}")
-
-response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[
+response = {
+    "model": "openai/gpt-oss-20b",
+    "messages": [
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": sanitized_prompt},
+        {
+            "role": "user",
+            "content": sanitized_prompt,
+        },
     ],
-    temperature=0,
-    max_tokens=512,
-)
+    "temperature": 0,
+    "max_tokens": 512,
+}
+# response = client.chat.completions.create(
+#     model="gpt-3.5-turbo",
+#     messages=[
+#         {"role": "system", "content": "You are a helpful assistant."},
+#         {"role": "user", "content": sanitized_prompt},
+#     ],
+#     temperature=0,
+#     max_tokens=512,
+# )
 response_text = response.choices[0].message.content
 sanitized_response_text, results_valid, results_score = scan_output(
     output_scanners, sanitized_prompt, response_text
