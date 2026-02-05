@@ -38,6 +38,7 @@ DEFAULT_ENTITY_TYPES: Final[list[str]] = [
     "UUID",
     "EMAIL_ADDRESS_RE",
     "US_SSN_RE",
+    "BTC_ADDRESS",
 ]
 
 ALL_SUPPORTED_LANGUAGES: Final[list[str]] = ["en", "zh"]
